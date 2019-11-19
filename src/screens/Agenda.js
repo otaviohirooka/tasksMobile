@@ -5,13 +5,16 @@ import { StyleSheet,
          ImageBackground,
          FlatList,
          TouchableOpacity,
-         Platform } from 'react-native'
+         Platform
+          } from 'react-native'
 import moment from 'moment'
 import 'moment/locale/pt-br'
 import todayImage from '../../assets/image/today.jpg'
-import commomStyles from '../commonStyles'
+import commonStyles from '../commonStyles'
 import Task from '../components/Task'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import ActionButton from 'react-native-action-button'
+import AddTask from './AddTask'
 
 export default class Agenda extends Component {
 
@@ -48,6 +51,18 @@ export default class Agenda extends Component {
         ],
         visibleTasks: [],
         showDoneTasks: true,
+        showAddTask: false,
+    }
+
+    addTask = task => {
+        const tasks = [...this.state.tasks]
+        tasks.push({
+            id: Math.random(),
+            desc: task.desc,
+            estimateAt: task.date,
+            doneAt: null
+        })
+        this.setState({ tasks, showAddTask: false }, this.filterTasks)
     }
 
     filterTasks = () => {
@@ -84,12 +99,15 @@ export default class Agenda extends Component {
     render() {
         return (
             <View style={styles.container}>
+                <AddTask isVisible={this.state.showAddTask}
+                    onSave={this.addTask}
+                    onCancel={() => this.setState({ showAddTask: false })} />
                 <ImageBackground source={todayImage}
                     style={styles.background}>
                     <View style={styles.iconBar}>
                         <TouchableOpacity onPress={this.toggleFilter}>
                             <Icon name={this.state.showDoneTasks ? 'eye' : 'eye-slash'}
-                                size={20} color={commomStyles.colors.secondary} />
+                                size={20} color={commonStyles.colors.secondary} />
                         </TouchableOpacity>
                     </View>
                     <View style={styles.titleBar}>
@@ -105,6 +123,8 @@ export default class Agenda extends Component {
                         renderItem={({ item }) => 
                             <Task {...item} toggleTask={this.toggleTask}/>} />
                 </View>
+                <ActionButton buttonColor={commonStyles.colors.today}
+                    onPress={() => { this.setState({ showAddTask: true }) }} />
             </View>
         )
     }
@@ -122,15 +142,15 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
     },
     title: {
-        fontFamily: commomStyles.fontFamily,
-        color: commomStyles.colors.secondary,
+        fontFamily: commonStyles.fontFamily,
+        color: commonStyles.colors.secondary,
         fontSize: 50,
         marginLeft: 20,
         marginBottom: 10,
     },
     subtitle: {
-        fontFamily: commomStyles.fontFamily,
-        color: commomStyles.colors.secondary,
+        fontFamily: commonStyles.fontFamily,
+        color: commonStyles.colors.secondary,
         fontSize: 20,
         marginLeft: 20,
         marginBottom: 30,
